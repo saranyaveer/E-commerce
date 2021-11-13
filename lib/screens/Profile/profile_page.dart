@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:sample_project/services/storage_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   Widget buildlistTileWidget({String? leading, required String trailing}) {
     return ListTile(
-      tileColor: Colors.white,
+      tileColor: Colors.grey.withOpacity(0.2),
       leading: Text(
         leading!,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
       ),
       trailing: Text(
         trailing,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
         ),
       ),
@@ -24,10 +27,10 @@ class ProfileScreen extends StatelessWidget {
       {required String leading, required String trailing}) {
     return ListTile(
       onTap: () {},
-      tileColor: Colors.white,
+      tileColor: Colors.grey.withOpacity(0.2),
       leading: Text(
         leading,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -38,11 +41,11 @@ class ProfileScreen extends StatelessWidget {
           Text(
             trailing,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
             ),
           ),
-          Icon(
+          const Icon(
             Icons.arrow_forward_ios_outlined,
             size: 20,
           ),
@@ -54,37 +57,37 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.white,
       //appBar: buildAppBar(),
       body: ListView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         children: [
           Container(
             height: 200,
-            margin: EdgeInsets.only(bottom: 10),
-            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 10),
+            color: Colors.grey.withOpacity(0.2),
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
+                children: const [
                   Center(
                     child: CircleAvatar(
-                      radius: 35,
+                      radius: 55,
                       backgroundColor: Colors.transparent,
                       backgroundImage: NetworkImage(
-                          "https://i.pinimg.com/originals/7b/48/65/7b48654b92587f3df86c21d7071bad42.jpg"),
+                          "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTl8fGluZGlhbiUyMHByb2ZpbGUlMjBwaWN0dXJlfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
                     ),
                   ),
                   Text(
-                    "Aqeel Baloch",
+                    "Ankita sharma",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "Phong Colony ...Sui",
+                    "Mumbai",
                     textAlign: TextAlign.center,
                   )
                 ],
@@ -92,53 +95,41 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(bottom: 20),
-            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 20),
+            color: Colors.grey.withOpacity(0.2),
             child: Column(
               children: [
                 buildlistTileWidget(
-                    leading: "Full name", trailing: "Aqeel Baloch"),
-                Divider(),
+                    leading: "Full name", trailing: "Ankita sharma"),
+                const Divider(),
                 buildlistTileWidget(
                   leading: "Email",
-                  trailing: "Aqeelbaloch123@gmail.com",
-                ),
-                Divider(),
-                buildlistTileWidget(
-                  leading: "Address",
-                  trailing: "123123",
-                ),
-                Divider(),
-                buildlistTileWidget(
-                  leading: "Payment",
-                  trailing: "6011\t****\t****\t1117",
+                  trailing: "Ankitasharma123@gmail.com",
                 ),
               ],
             ),
           ),
+          // Container(
+          //   margin: const EdgeInsets.only(bottom: 10),
+          //   color: Colors.grey.withOpacity(0.2),
+          //   child: Column(
+          //     children: [
+          //       const Divider(),
+          //       buildBottomListTile(
+          //         leading: "My bag",
+          //         trailing: "3",
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Container(
-            margin: EdgeInsets.only(bottom: 10),
-            color: Colors.white,
-            child: Column(
-              children: [
-                buildBottomListTile(
-                  leading: "Wish-list",
-                  trailing: "5",
-                ),
-                Divider(),
-                buildBottomListTile(
-                  leading: "My bag",
-                  trailing: "3",
-                ),
-                Divider(),
-                buildBottomListTile(
-                  leading: "My orders",
-                  trailing: "1 in transit",
-                ),
-              ],
-            ),
-          ),
-          Container(margin: EdgeInsets.all(20.0), child: Icon(Icons.logout)
+              margin: const EdgeInsets.all(20.0),
+              child: IconButton(
+                  onPressed: () {
+                    StorageService().logout();
+                    Get.toNamed('/login');
+                  },
+                  icon: const Icon(Icons.logout_rounded))
 
               // MyButtonWidget(
               //   color: AppColors.baseDarkPinkColor,

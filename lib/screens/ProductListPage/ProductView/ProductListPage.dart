@@ -3,9 +3,10 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:sample_project/screens/Bottom_navigation_bar/bottomNavigationBar.dart';
-import 'package:sample_project/screens/ProductListPage/ProductView/SingleProductViewPage.dart';
+import 'package:sample_project/repository/products_repository.dart';
+
 import 'package:sample_project/screens/ProductListPage/product_controller.dart';
 import 'package:sample_project/themes/app_colors.dart';
 
@@ -16,6 +17,8 @@ class CookiePage extends GetView<ProductController> {
   Widget build(BuildContext context) {
     //   final item = controller.produList;
     ProductController item = Get.find();
+    final searchController = TextEditingController();
+    bool isFavourite = false;
 
     return Scaffold(
         extendBody: true,
@@ -24,6 +27,7 @@ class CookiePage extends GetView<ProductController> {
           child: Column(
             children: [
               // const SizedBox(height: 5.0),
+
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -36,20 +40,31 @@ class CookiePage extends GetView<ProductController> {
                             Radius.circular(10.0),
                           ),
                         ),
-                        child: TextFormField(
-                          //  controller: controller,
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            prefixIcon: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.search_rounded,
-                                  color: Appcolors.appPink,
-                                )),
-                            border: InputBorder.none,
-                          ),
-                          // onChanged: onSearchTextChanged,
-                        ),
+                        child: Obx(() {
+                          if (item.isLoading.value == false) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else {
+                            return TextFormField(
+                              controller: searchController,
+                              onChanged: (value) {
+                                controller.getSearchData(searchController.text);
+                                //item.searchText.value = value;
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Search',
+                                prefixIcon: IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                      Icons.search_rounded,
+                                      color: Appcolors.appPink,
+                                    )),
+                                border: InputBorder.none,
+                              ),
+                              // onChanged: onSearchTextChanged,
+                            );
+                          }
+                        }),
                       ),
                     ),
                     const SizedBox(height: 15.0),
@@ -71,6 +86,7 @@ class CookiePage extends GetView<ProductController> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 10.0),
               SizedBox(
                   height: 40,
@@ -84,24 +100,7 @@ class CookiePage extends GetView<ProductController> {
                           scrollDirection: Axis.horizontal,
                           itemCount: item.categoriesListRX.length,
                           itemBuilder: (context, index) {
-                            return
-                                //  ElevatedButton(
-                                //     onPressed: () {
-                                //       selected.value = index;
-                                //       controller.getProductCategories(
-                                //           categoryParams: item
-                                //               .categoriesListRX[index]
-                                //               .toString());
-                                //       //print(selected.value);
-                                //     },
-                                //     child: Text(item.categoriesListRX[index]
-                                //         .toString())); //const Text("eeeeee");
-                                //  Text(item.categoriesListRX[index].toString());
-                                // buildCategoryTab(
-                                //     item.categoriesListRX[index].toString(),
-                                //     index,
-                                //     item.categoryProduct[index].toString());
-                                Container(
+                            return Container(
                               //  padding: const EdgeInsets.all(4),
                               margin: const EdgeInsets.only(
                                   top: 1, bottom: 1, left: 10, right: 10),
@@ -154,6 +153,7 @@ class CookiePage extends GetView<ProductController> {
               const SizedBox(height: 10.0),
               Expanded(
                 child: Obx(() {
+                  // final fav= controller
                   if (item.isLoading.value == false) {
                     return const Center(child: CircularProgressIndicator());
                   } else {
@@ -168,15 +168,170 @@ class CookiePage extends GetView<ProductController> {
                         ),
                         itemCount: item.produList.length,
                         itemBuilder: (context, index) {
+                          void onpressed() {
+                            item.isFavourite.value = !item.isFavourite.value;
+                          }
+
                           return Column(
                             children: [
-                              buildGridTile(
-                                item.produList[index].title.toString(),
-                                item.produList[index].price.toString(),
-                                item.produList[index].image.toString(),
-                                item.produList[index].id.toString(),
-                                //  item.getSingleProduct(item.produList[index].id.toString(),)
-                              )
+                              // buildGridTile(
+                              //     item.produList[index].title.toString(),
+                              //     item.produList[index].price.toString(),
+                              //     item.produList[index].image.toString(),
+                              //     item.produList[index].id.toString(),
+                              //     item.isFavourite.value
+                              //     //  item.getSingleProduct(item.produList[index].id.toString(),)
+                              //     )
+                              InkWell(
+                                onTap: () {
+                                  Get.toNamed('/singleproductlistpage');
+                                  controller.getSingleProduct(
+                                      item.produList[index].id.toString());
+                                  // Navigator.of(context).push(MaterialPageRoute(
+                                  //     builder: (context) => const SingleProductViewPage()));
+                                },
+                                child: Container(
+                                  height: 250,
+                                  margin: const EdgeInsets.only(
+                                      top: 0, bottom: 10, left: 10, right: 10),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Colors.transparent, //Appcolors.appPink,
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          spreadRadius: 3.0,
+                                          blurRadius: 5.0)
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          //  alignment: Alignment.topRight,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                            color: Colors.transparent,
+                                            image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                item.produList[index].image
+                                                    .toString(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              item.produList[index].title
+                                                  .toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "\$ " +
+                                                      item.produList[index]
+                                                          .price
+                                                          .toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                const SizedBox(
+                                                  width: 15,
+                                                ),
+                                                Obx(() {
+                                                  return IconButton(
+                                                      onPressed: () {
+                                                        final heart = controller
+                                                            .favIconList;
+                                                        if (controller
+                                                            .favIconList
+                                                            .contains(item
+                                                                .produList[
+                                                                    index]
+                                                                .id)) {
+                                                          heart.remove(item
+                                                              .produList[index]
+                                                              .id);
+                                                          ProductRepository()
+                                                              .deleteFavProductList(
+                                                                  item
+                                                                      .produList[
+                                                                          index]
+                                                                      .id!);
+                                                          //  controller.removeFavProduct(id as int);
+                                                          // ProductRepository()
+                                                          //     .deleteFavProductList(id as int);
+                                                        } else {
+                                                          heart.add(item
+                                                              .produList[index]
+                                                              .id);
+                                                          ProductRepository()
+                                                              .saveFavourite(item
+                                                                  .produList[
+                                                                      index]
+                                                                  .id!);
+                                                          //  controller.addFavouriteProduct(id as int);
+                                                          //ProductRepository().saveFavourite(id as int);
+                                                        }
+                                                        // final isfav = controller.isFavourite.value;
+                                                        // controller.isFavourite.value = !value;
+
+                                                        //   setState(() => pressAttention = !pressAttention;
+                                                      },
+                                                      icon: controller
+                                                              .favIconList
+                                                              .contains(item
+                                                                  .produList[
+                                                                      index]
+                                                                  .id)
+                                                          ? const Icon(
+                                                              Icons.favorite,
+                                                              color: Appcolors
+                                                                  .appPink,
+                                                            )
+                                                          : const Icon(
+                                                              Icons
+                                                                  .favorite_border_rounded,
+                                                              color: Appcolors
+                                                                  .appPink,
+                                                            ));
+                                                })
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           );
                         });
@@ -279,11 +434,9 @@ class CookiePage extends GetView<ProductController> {
   }
 
   Widget buildGridTile(
-    String name,
-    String price,
-    String imgPath,
-    String id,
-  ) {
+      String name, String price, String imgPath, String id, bool value
+      // void Function() function
+      ) {
     return InkWell(
       onTap: () {
         Get.toNamed('/singleproductlistpage');
@@ -345,17 +498,45 @@ class CookiePage extends GetView<ProductController> {
                   Row(
                     children: [
                       Text(
-                        price,
+                        "\$ " + price,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
                         width: 15,
                       ),
-                      const Icon(
-                        Icons.favorite_border_rounded,
-                        color: Appcolors.appPink,
-                      )
+                      Obx(() {
+                        return IconButton(
+                            onPressed: () {
+                              final heart = controller.favIconList;
+                              if (controller.favIconList.contains(id)) {
+                                heart.remove(id);
+                                ProductRepository()
+                                    .deleteFavProductList(id as int);
+                                //  controller.removeFavProduct(id as int);
+                                // ProductRepository()
+                                //     .deleteFavProductList(id as int);
+                              } else {
+                                heart.add(id);
+                                ProductRepository().saveFavourite(id as int);
+                                //  controller.addFavouriteProduct(id as int);
+                                //ProductRepository().saveFavourite(id as int);
+                              }
+                              // final isfav = controller.isFavourite.value;
+                              // controller.isFavourite.value = !value;
+
+                              //   setState(() => pressAttention = !pressAttention;
+                            },
+                            icon: controller.favIconList.contains(id)
+                                ? const Icon(
+                                    Icons.favorite,
+                                    color: Appcolors.appPink,
+                                  )
+                                : const Icon(
+                                    Icons.favorite_border_rounded,
+                                    color: Appcolors.appPink,
+                                  ));
+                      })
                     ],
                   )
                 ],

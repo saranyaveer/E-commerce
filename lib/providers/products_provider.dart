@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:sample_project/models/category_model.dart';
+
 import 'package:sample_project/models/products_model.dart';
 import 'package:sample_project/models/user_model.dart';
 import 'package:sample_project/repository/products_repository.dart';
@@ -39,7 +39,6 @@ class ProductsProvider {
       final result = data.map((e) => ProductsModel.fromJson(e)).toList();
 
       for (var items in result) {
-        print("EmpList" + items.price.toString());
         productRepository.saveProductList(items);
       }
 

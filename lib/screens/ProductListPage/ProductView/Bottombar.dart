@@ -1,7 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:sample_project/themes/app_colors.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({Key? key}) : super(key: key);
@@ -50,7 +51,9 @@ class BottomBar extends StatelessWidget {
                               padding:
                                   const EdgeInsets.only(left: 50, right: 50),
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  // Get.toNamed('/cart');
+                                },
                                 child: const Text(
                                   "Buy Now",
                                   style: TextStyle(
@@ -61,28 +64,14 @@ class BottomBar extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // const CircleAvatar(
-                          //   backgroundImage:
-                          //       AssetImage("lib/assets/images/cart_pink.png"),
-                          //   radius: 35,
-                          // ),
                           IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // Get.toNamed('/cart');
+                              },
                               icon: const Icon(Icons.shopping_cart_rounded,
                                   size: 30, color: Colors.pinkAccent))
                         ],
                       )),
-                  // Container(
-                  //     height: 50.0,
-                  //     width: MediaQuery.of(context).size.width / 2 - 40.0,
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //       children: const <Widget>[
-                  //         Icon(Icons.search, color: Color(0xFF676E79)),
-                  //         Icon(Icons.shopping_basket, color: Color(0xFF676E79))
-                  //       ],
-                  //     )
-                  //     ),
                 ])));
   }
 }

@@ -1,9 +1,10 @@
-import 'package:sample_project/models/category_model.dart';
+import 'package:sample_project/models/favouiteModel.dart';
 import 'package:sample_project/models/products_model.dart';
 import 'package:sample_project/models/user_model.dart';
 import 'package:sample_project/providers/products_provider.dart';
 
 import 'package:get/get.dart';
+import 'package:sample_project/repository/favouriteRepository.dart';
 import 'package:sample_project/repository/products_repository.dart';
 import 'package:sample_project/services/storage_service.dart';
 
@@ -13,28 +14,51 @@ class ProductController extends GetxController {
   late final ProductsProvider productsProvider;
 
   ProductController(
-      {required this.productsProvider, required this.productRepository});
+      {required this.productsProvider,
+      required this.productRepository,
+      required this.favoritesRepository});
 
   ProductRepository productRepository;
+  FavoritesRepository favoritesRepository;
   var selectedIndex = 1.obs;
   Rating? prodList = Rating();
   final produList = RxList<ProductsModel>();
   final produListFromStorage = RxList<ProductsModel>();
+  final produFavList = RxList<ProductsModel>();
+  final searchText = "".obs;
+  //final favListIcon = RxList<FavoritesModel>();
+  final favListIcon = RxList<ProductsModel>();
 
   final categoriesListRX = RxList<dynamic>();
   final singleProductDetails = RxList<ProductsModel>();
   final userList = RxList<UserModel>();
   var singleUser = Rx<UserModel>(UserModel());
   int? userId;
+  var isFavourite = false.obs;
+  List<ProductsModel> searchproductsmodel = [];
+  // List<ProductsModel> favList = [].obs as List<ProductsModel>;
+  var favList = Rx<ProductsModel>(ProductsModel());
+  final favouriteList = RxList<ProductsModel>();
+  var favIconList = [].obs;
+  var favlist = RxList<int?>();
 
   final loggedInuserId = StorageService().getUserName('username');
 
   @override
-  void onInit() {
+  void onInit() async {
+    super.onInit();
     getMoviessLists();
     getCategoryLists();
-    // getProductCategories(categoryParams: 'electronics');
-    super.onInit();
+    getProductsForSearchData();
+    //  getFavouriteListCart();
+    //  getfavIconList();
+//     var favList = await FavoritesDaoClass().getFavourites();
+// selectedFavoriteProduct.value = favList;
+    var list = await productRepository.getFavouriteList1();
+    favIconList.value = list;
+    // var list = await favoritesRepository.getFavourites();
+    // favIconList.value = list;
+    // isFavourite = false.obs;
   }
 
   var isLoading = true.obs;
@@ -46,6 +70,50 @@ class ProductController extends GetxController {
   var singleProd = Rx<ProductsModel>(ProductsModel());
   var categoryProduct = Rx<List<ProductsModel>>([]);
 
+  // void getFavouriteListCart() async {
+  //   try {
+  //     isLoading(true);
+  //     errorMessage = null;
+  //      final results = // favoritesRepository.getFavourites();
+  //     productRepository.getFavouriteList();
+  //      favListIcon.value = results ;
+  //     //final items = results as List<int>;
+
+  //     // final prodList = await productRepository.cartItems(items);
+  //     // produFavList.value = prodList;
+
+  //     // for (var item in items) {
+  //     //   // var itemss = item
+  //     //   // getSingleProduct()
+  //     // }
+  //   } catch (e) {
+  //     isLoading(false);
+  //     pageStatus.value = PageStatus.error;
+  //     errorMessage = e.toString();
+  //   }
+  // }
+
+  // Future<void> getfavIconList() async {
+  //   try {
+  //     isLoading(true);
+
+  //     errorMessage = null;
+  //     pageStatus.value = PageStatus.loading;
+  //     var list = await favoritesRepository.getFavourites();
+  //     favlist.value = list.cast<int?>();
+  //     //List<int?> list = favIconList as List<int?>;
+  //     final productFavList =
+  //         await productRepository.cartItems(list.cast<int?>());
+  //     produFavList.value = productFavList;
+
+  //     pageStatus.value = PageStatus.success;
+  //   } catch (e) {
+  //     isLoading(false);
+  //     pageStatus.value = PageStatus.error;
+  //     errorMessage = e.toString();
+  //   }
+  // }
+
   Future<void> getMoviessLists() async {
     try {
       isLoading(true);
@@ -54,7 +122,46 @@ class ProductController extends GetxController {
       pageStatus.value = PageStatus.loading;
       final productList = await productsProvider.getProdList();
       produList.value = productList;
+
       pageStatus.value = PageStatus.success;
+    } catch (e) {
+      isLoading(false);
+      pageStatus.value = PageStatus.error;
+      errorMessage = e.toString();
+    }
+  }
+
+  void getProductsForSearchData() async {
+    try {
+      errorMessage = null;
+
+      final results = productRepository.getEmpList();
+
+      List<ProductsModel>? ress = await results;
+
+      for (var item in ress) {
+        searchproductsmodel.add(item);
+      }
+      // produList.value = ress;
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  void getSearchData(String searchtxt) {
+    try {
+      isLoading(true);
+      errorMessage = null;
+      if (searchtxt.isEmpty) {
+        produList.value = searchproductsmodel;
+      } else {
+        var model = searchproductsmodel
+            .where((user) =>
+                user.title!.toLowerCase().contains(searchtxt.toLowerCase()))
+            .toList();
+
+        produList.value = model;
+      }
     } catch (e) {
       isLoading(false);
       pageStatus.value = PageStatus.error;
@@ -64,10 +171,7 @@ class ProductController extends GetxController {
 
   //To fetch the list of category
   void getCategoryLists() async {
-    print("Inside Category");
     try {
-      print("Inside try");
-
       isLoading(true);
       errorMessage = null;
       pageStatus.value = PageStatus.loading;
@@ -88,19 +192,13 @@ class ProductController extends GetxController {
     ID = id;
     try {
       isLoading(true);
-      print("isloading in sing prod");
       errorMessage = null;
       pageStatus.value = PageStatus.loading;
       final singleproductList =
           await productsProvider.getSingleProductDetail(id!);
-      print("singleproductList");
-      //print(singleproductList.length);
-      //  singleProductDetails.value = singleproductList;
-      print("singleproductList.value");
-      // print(singleProductDetails.value.first.description);
+
       singleProd.value = singleproductList;
       pageStatus.value = PageStatus.success;
-      print("Success in ding pro");
     } catch (e) {
       isLoading(false);
       pageStatus.value = PageStatus.error;
@@ -116,8 +214,7 @@ class ProductController extends GetxController {
       pageStatus.value = PageStatus.loading;
       final productList = await productRepository.getEmpList();
       produListFromStorage.value = productList;
-      print("productList nnnnnn");
-      print(produListFromStorage.value.first);
+
       pageStatus.value = PageStatus.success;
     } catch (e) {
       isLoading(false);
@@ -128,8 +225,6 @@ class ProductController extends GetxController {
 
   void getProductCategories({required String categoryParams}) async {
     try {
-      print("inside prod category");
-
       errorMessage = null;
 
       pageStatus.value = PageStatus.loading;
@@ -139,7 +234,7 @@ class ProductController extends GetxController {
       // proudctModel = productCategoryResponse as Rx<List<ProductsModel>>;
       //print(proudctModel);
 
-      produList.value = productCategoryResponse as List<ProductsModel>;
+      produList.value = productCategoryResponse;
 
       pageStatus.value = PageStatus.success;
     } catch (e) {
@@ -149,15 +244,55 @@ class ProductController extends GetxController {
     }
   }
 
+  Future<void> addFavouriteProduct(int id) async {
+    try {
+      isLoading(true);
+      errorMessage = null;
+      final favproductList = await productRepository.saveFavourite(id);
+      // productRepository.saveProductList(favproductList);
+
+      // favList.value = favproductList;
+      // final results = productRepository.getFavouriteList();
+
+      // final localstrorageFavItems = await productRepository.saveFavourite(id);
+
+      // // favIconList.add(localstrorageFavItems);
+
+      // List<ProductsModel> ress = await results;
+      // favouriteList.value = ress;
+    } catch (e) {
+      isLoading(false);
+      errorMessage = e.toString();
+    }
+  }
+
+  void removeFavProduct(int id) async {
+    try {
+      isLoading(true);
+      errorMessage = null;
+      final favproductList = await productRepository.deleteFavProductList(id);
+      // productRepository.deleteFavProductList(id);
+      // errorMessage = null;
+
+      // final results = productRepository.getFavouriteList();
+
+      // List<ProductsModel> ress = await results;
+      // favouriteList.value = ress;
+    } catch (e) {
+      isLoading(false);
+      errorMessage = e.toString();
+    }
+  }
+
+  void getFavProducts() {}
+
   Future<void> getUsersLists() async {
     try {
       isLoading(true);
       errorMessage = null;
       final userLists = await productsProvider.getUserList();
-      print("list from API");
-      print(userLists.length);
+
       userList.value = userLists;
-      print(userList.value.first);
 
       for (var item in userLists) {
         if (item.username == loggedInuserId) {

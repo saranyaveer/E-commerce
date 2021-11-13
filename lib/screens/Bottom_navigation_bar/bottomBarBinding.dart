@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:sample_project/providers/cart_provider.dart';
 import 'package:sample_project/providers/login_provider.dart';
 import 'package:sample_project/providers/products_provider.dart';
+import 'package:sample_project/repository/favouriteRepository.dart';
 import 'package:sample_project/repository/products_repository.dart';
 import 'package:sample_project/screens/ProductListPage/product_controller.dart';
 import 'package:sample_project/screens/cart/cart_controller.dart';
@@ -18,7 +19,8 @@ class BottomBarBinding extends Bindings {
     Get.lazyPut<ProductController>(() => ProductController(
         productsProvider: ProductsProvider(
             client: Client(), productRepository: ProductRepository()),
-        productRepository: ProductRepository()));
+        productRepository: ProductRepository(),
+        favoritesRepository: FavoritesRepository()));
     Get.lazyPut<LoginController>(
         () => LoginController(loginProvider: LoginProvider(client: Client())));
     Get.lazyPut<CartController>(() => CartController(

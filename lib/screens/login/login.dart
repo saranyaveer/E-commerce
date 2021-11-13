@@ -9,7 +9,6 @@ import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:http/http.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sample_project/providers/login_provider.dart';
-import 'package:sample_project/screens/example/listpage.dart';
 import 'package:sample_project/screens/login/login_controller.dart';
 import 'package:sample_project/services/storage_service.dart';
 import 'package:sample_project/themes/app_colors.dart';
@@ -29,7 +28,7 @@ class MyLogIn extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    //double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Appcolors.scaffoldColor,
       body: SafeArea(
@@ -90,6 +89,7 @@ class MyLogIn extends GetView<LoginController> {
                           Fluttertoast.showToast(
                               msg: item.errorMessage.toString(),
                               toastLength: Toast.LENGTH_SHORT,
+                              backgroundColor: Colors.red,
                               gravity: ToastGravity.CENTER);
                           return Center(
                               child: Text(item.errorMessage.toString()));
@@ -141,20 +141,24 @@ class MyLogIn extends GetView<LoginController> {
                                                 "username or password is incorrect"
                                                     .toString(),
                                             toastLength: Toast.LENGTH_SHORT,
+                                            textColor: Colors.red,
+                                            backgroundColor: Colors.red,
                                             gravity: ToastGravity.CENTER);
                                       } else {
+                                        Fluttertoast.showToast(
+                                            msg: "Successfully logged in",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            backgroundColor: Colors.green,
+                                            gravity: ToastGravity.CENTER);
                                         StorageService().setUserName(
                                             "username", nameController.text);
-                                        Get.toNamed('/home');
+                                        Get.toNamed('/bottombar');
                                         // Navigator.push(
                                         //     context,
                                         //     MaterialPageRoute(
                                         //         builder: (context) =>
                                         //             const CookiePage()));
-                                        Fluttertoast.showToast(
-                                            msg: "Successfully logged in",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.CENTER);
+
                                       }
                                     } else {
                                       autoMode = AutovalidateMode.always;

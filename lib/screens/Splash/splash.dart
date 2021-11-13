@@ -29,7 +29,6 @@ class _MySplashState extends State<MySplash> {
     setState(() {
       username = StorageService().getUserName("username")!;
     });
-    print('username: $username');
   }
 
   checkNetwork() async {
@@ -47,7 +46,7 @@ class _MySplashState extends State<MySplash> {
     super.didChangeDependencies();
     await Future.delayed(const Duration(seconds: 3));
     getData().whenComplete(() async {
-      username == '' ? Get.toNamed('/login') : Get.toNamed('/home');
+      username == '' ? Get.toNamed('/login') : Get.toNamed('/bottombar');
     });
   }
 
@@ -55,11 +54,16 @@ class _MySplashState extends State<MySplash> {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Colors.pinkAccent,
-      body: SizedBox(
-        child:
-            // Image.network(
-            //     "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8c3BsYXNoJTIwc2NyZWVufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60")
-            Text('Loading...'),
+      body: Center(
+        child: SizedBox(
+          child:
+              // Image.network(
+              //     "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8c3BsYXNoJTIwc2NyZWVufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60")
+              Text(
+            'Loading...',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
       ),
     );
   }

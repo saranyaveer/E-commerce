@@ -14,8 +14,7 @@ class FavouritesPage extends GetView<ProductController> {
   @override
   Widget build(BuildContext context) {
     ProductController item = Get.find();
-    return Container(
-        child: Column(
+    return Column(
       children: [
         Expanded(
           child: Obx(() {
@@ -48,7 +47,7 @@ class FavouritesPage extends GetView<ProductController> {
           }),
         )
       ],
-    ));
+    );
   }
 
   Widget buildGridTile(

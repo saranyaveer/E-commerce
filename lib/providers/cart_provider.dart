@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:sample_project/models/cart_model.dart';
 import 'package:sample_project/models/products_model.dart';
-import 'package:sample_project/providers/products_provider.dart';
 
 class CartProvider {
   CartProvider({required this.client});

@@ -7,10 +7,9 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:sample_project/screens/Bottom_navigation_bar/BottomBarcontroller.dart';
 import 'package:sample_project/screens/FavouritesListPage/FavouritesPage.dart';
 import 'package:sample_project/screens/ProductListPage/ProductView/ProductListPage.dart';
-import 'package:sample_project/screens/ProductListPage/ProductView/SingleProductViewPage.dart';
 import 'package:sample_project/screens/Profile/profile_page.dart';
 import 'package:sample_project/screens/cart/cart.dart';
-import 'package:sample_project/screens/login/login.dart';
+
 import 'package:sample_project/themes/app_colors.dart';
 
 class BottomNavigatorWidget extends StatelessWidget {
@@ -19,9 +18,10 @@ class BottomNavigatorWidget extends StatelessWidget {
 
   final _pages = [
     const CookiePage(),
+    //  const Favourite(),
     const FavouritesPage(),
     //MyLogIn(),
-    CartPage(),
+    const CartPage(),
     ProfileScreen()
     //  const FavouritesPage(),
   ];
@@ -88,7 +88,7 @@ class BottomNavigatorWidget extends StatelessWidget {
                 type: BottomNavigationBarType.fixed,
                 unselectedItemColor: Colors.grey,
 
-                selectedItemColor: Color(0xFF2e3192),
+                selectedItemColor: const Color(0xFF2e3192),
                 onTap: controller.changeTabIndex,
                 currentIndex: controller.tabIndex.value,
                 selectedIconTheme: const IconThemeData(
@@ -120,13 +120,6 @@ class BottomNavigatorWidget extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  _bottomNavigationBarItem({required IconData icon, required String label}) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon),
-      label: label,
     );
   }
 }

@@ -54,10 +54,8 @@ class LoginController extends GetxController {
       isLoading(true);
       errorMessage = null;
       final userLists = await loginProvider.getUserList();
-      print("list from API");
-      print(userLists.length);
+
       userList.value = userLists;
-      print(userList.value.first);
 
       for (var item in userLists) {
         if (item.username == userName) {

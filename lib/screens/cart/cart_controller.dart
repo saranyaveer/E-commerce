@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:sample_project/models/cart_model.dart';
 import 'package:sample_project/models/products_model.dart';
 import 'package:sample_project/providers/cart_provider.dart';
@@ -14,20 +13,21 @@ class CartController extends GetxController {
   CartController({required this.cartProvider, required this.productRepository});
   ProductRepository productRepository;
 
-  final cartList = RxList<CartModel>();
+  final cartList = RxList<CartModel>([]);
+  final productCartitems = Rx<List<CartModel>>([]);
 
   final productCartListof = RxList<dynamic>();
 
   var productCartList = RxList<ProductsModel>();
-
-  // Map<String, dynamic> quantity;
-
-  // var categorymodel = Rx<CategoryModel>(CategoryModel());
+  var quantitySum = 0.obs;
 
   @override
   void onInit() {
     getCartLists();
     super.onInit();
+    productCartitems.obs;
+    // cartLists = cartList.value;
+    //  quantitySum;
   }
 
   var isLoading = true.obs;
@@ -35,7 +35,7 @@ class CartController extends GetxController {
   String? errorMessage;
   String? ID = "1";
   List<int?> productIds = [];
-  // List<ProductsModel> ProductsList = Pr;
+
   var totalAmount = 0.0.obs;
 
   Future<void> getCartLists() async {
@@ -45,6 +45,7 @@ class CartController extends GetxController {
       // pageStatus.value = PageStatus.loading;
       final cartDetail = await cartProvider.getCartDetails();
       cartList.value = cartDetail;
+      productCartitems.value = cartDetail;
 
       //   var prodList = productRepository.saveProductQuantityList(cartList);
 
@@ -52,31 +53,30 @@ class CartController extends GetxController {
       // products.add(cartDetail.);
 
       for (var item in cartList) {
-        print("For loop");
-        print(item.date);
         for (var prod in item.products) {
-          print("For prod loop:prod ID");
-          print(prod.productId);
           productIds.add(prod.productId);
         }
-        print("out frst loop");
       }
 
       final prodList = productRepository.cartItems(productIds);
       List<ProductsModel>? ress = await prodList;
 
       productCartList.value = ress;
-      print("cart product value");
-      print(productCartList.value.first);
 
       double totalAmounts = 0;
-      for (var item in productCartList.value) {
-        totalAmounts += item.price!;
-        totalAmount.value = totalAmounts;
-        print(totalAmounts);
+      for (var item in ress) {
+        for (var items in productCartitems.value) {
+          for (var prod in items.products) {
+            if (item.id == prod.productId) {
+              totalAmounts += (item.price! * prod.quantity);
+              totalAmount.value = totalAmounts;
+            }
+          }
+        }
+        // totalAmounts += (item.price!);
+        // totalAmount.value = totalAmounts;
       }
-      print("Total amount");
-      print(totalAmount.value);
+
       // final prodList =
       //     (await cartProvider.getSingleProductDetail(productIds.first));
       // print("out 2 loop prod list");
@@ -90,11 +90,8 @@ class CartController extends GetxController {
       // print("cart product value");
       // print(productCartListof.value.length);
 
-    }
-    //  pageStatus.value = PageStatus.success;
-    catch (e) {
+    } catch (e) {
       isLoading(false);
-      //    pageStatus.value = PageStatus.error;
       errorMessage = e.toString();
     }
   }

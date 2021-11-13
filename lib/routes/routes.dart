@@ -3,6 +3,7 @@ import 'package:sample_project/screens/Bottom_navigation_bar/bottomBarBinding.da
 import 'package:sample_project/screens/Bottom_navigation_bar/bottomNavigationBar.dart';
 import 'package:sample_project/screens/FavouritesListPage/FavouritesPage.dart';
 import 'package:sample_project/screens/Home/HomePage.dart';
+import 'package:sample_project/screens/Payment/payment_page.dart';
 import 'package:sample_project/screens/ProductListPage/ProductView/ProductListPage.dart';
 import 'package:sample_project/screens/ProductListPage/ProductView/SingleProductViewPage.dart';
 import 'package:sample_project/screens/ProductListPage/product_binding.dart';
@@ -43,6 +44,10 @@ class Routes {
       name: '/fav',
       page: () => const FavouritesPage(),
       binding: UserListBinding(),
+    ),
+    GetPage(
+      name: '/payment',
+      page: () => const PaymentPage(),
     ),
   ];
 }
